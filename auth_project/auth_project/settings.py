@@ -125,8 +125,17 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'auth_api.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
 CONSTANCE_CONFIG = {
-    'ACCESS_TOKEN_LIFETIME': (30, 'Access token lifetime in seconds'),
+    'ACCESS_TOKEN_LIFETIME': (30 * 60 * 60, 'Access token lifetime in seconds'),
     'REFRESH_TOKEN_LIFETIME': (30 * 24 * 60 * 60, 'Refresh token lifetime in seconds'),
 }
 
