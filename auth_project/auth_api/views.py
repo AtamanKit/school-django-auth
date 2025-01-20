@@ -13,9 +13,10 @@ from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
 
 
 def create_access_token(user):
+    print(f"ACCESS_TOKEN_LIFETIME: {config.ACCESS_TOKEN_LIFETIME}")
     return jwt.encode({
         'user_id': user.id,
-        'exp': datetime.datetime.utcnow() + timedelta(seconds=config.ACCESS_TOKEN_LIFETIME)
+        'exp': datetime.datetime.now(datetime.timezone.utc) + timedelta(seconds=config.ACCESS_TOKEN_LIFETIME)
     }, settings.SECRET_KEY, algorithm='HS256')
 
 
@@ -54,6 +55,8 @@ class LoginView(APIView):
 
 
 class RefreshView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         refresh_token = request.data.get('refresh_token')
         try:
@@ -74,6 +77,8 @@ class RefreshView(APIView):
 
 
 class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         refresh_token = request.data.get('refresh_token')
         try:

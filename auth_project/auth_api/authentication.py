@@ -21,7 +21,7 @@ class JWTAuthentication(BaseAuthentication):
             user = CustomUser.objects.get(id=payload['user_id'])
             return (user, None)
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Token expired')
+            raise AuthenticationFailed('Token expired!!!!!!')
         except jwt.DecodeError:
             raise AuthenticationFailed('Invalid token')
         except (jwt.InvalidTokenError, CustomUser.DoesNotExist):
