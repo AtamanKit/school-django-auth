@@ -135,7 +135,7 @@ REST_FRAMEWORK = {
 }
 
 CONSTANCE_CONFIG = {
-    'ACCESS_TOKEN_LIFETIME': (108000, 'Access token lifetime in seconds'),
+    'ACCESS_TOKEN_LIFETIME': (30 * 60 * 60, 'Access token lifetime in seconds'),
     'REFRESH_TOKEN_LIFETIME': (30 * 24 * 60 * 60, 'Refresh token lifetime in seconds'),
 }
 
