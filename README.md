@@ -1,11 +1,23 @@
-# Develop a RESTful API for Authentication
+# Develop a RESTful API for Authentication with Django and Django REST Framework
+*The project was tested to work on Ubuntu and WSL.*
 
 ### Objective
 Imagine you're building a secure gateway for an application using Django and Django REST Framework. Your mission is to create a REST API that handles user authentication and authorization. Here's what it will do:
 
 It will warmly welcome new users by allowing them to register. Once they're part of the system, they can log in with ease. For added security, users will have the ability to refresh their tokens to stay authenticated.
 
-If a user decides to take a break, they can log out anytime. The system focuses on keeping the process simple, secure, and user-friendly, ensuring a smooth experience for all users.
+If a user decides to take a break, they can log out anytime. The system will also let users view and update their personal details whenever they need to, making the experience seamless and user-friendly.
+
+The complete code can be downloaded from my [GitHub](https://github.com/AtamanKit/school-django-auth) repository.
+
+### Prerequisites
+* Ubuntu (or WSL for Windows users)
+* Python 3.x
+* Django
+* Django REST Framework
+* PyJWT
+* Constance - Dynamic Django settings
+* Redis
 
 To install the dependencies and tools for this project, we will use the [uv package manager](https://docs.astral.sh/uv/). First, we will initialize a new project then to add all the necessary dependencies.
 
@@ -564,7 +576,7 @@ Quit the server with CONTROL-C.
 
 ```
 
-Remember, at the beginning, we talked about **Redis**, a necessary dependency for **Django Constance** to work. Depending on your system (Ubuntu or WSL), the installation process would look like this:
+Remember, at the beginning, we talked about **Redis**, a necessary dependency for **Django Constance** to work? Depending on your system (Ubuntu or WSL), the installation process would look like this:
 
 ```
 
@@ -603,6 +615,95 @@ Open yet another terminal window, and let's verify our endpoinds
 
 ```
 
-curl -X POST http://localhost:8000 -d '{"email": "first@example.com", "password": "securepassword"}' -H "Content-Type: application/json"
+curl -X POST http://localhost:8000/api/register/ -d '{"email": "first@example.com", "password": "securepassword"}' -H "Content-Type: application/json"
+
+```
+
+Outputs:
+
+```
+
+{"id":1,"email":"first@example.com"}
+
+```
+
+**Authentication**
+Here we will obtain the Access and Refresh tokens:
+
+```
+
+curl -X POST http://localhost:8000/api/login/ -d '{"email": "first@example.com", "password": "securepassword"}' -H "Content-Type: application/json"
+
+```
+
+Outputs:
+
+```
+
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3Mzc2NzE1NTF9.qZ8vlF65ovei8hk0mqqshjlIsEzFApZZWTIAdAUib4g","refresh_token":"c9c1a1fd-f886-404a-862b-2c123b0ec1a5"}
+
+```
+
+**Access Token Refresh**
+
+```
+
+curl -X POST http://localhost:8000/api/refresh/ -d '{"refresh_token": "c9c1a1fd-f886-404a-862b-2c123b0ec1a5"}' -H "Content-Type: application/json"
+
+```
+
+Outputs:
+
+```
+
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3Mzc2NzE3MjR9.2PtaZVq5ioGNyQoPDU6U2ED-sgALWJZAq1Kw9-UL8no","refresh_token":"2f37b70f-18dd-471c-9ef7-8065cb2f4634"}
+
+```
+
+**Logout (Invalidating Refresh Token)**
+
+```
+
+curl -X POST http://localhost:8000/api/logout/ -d '{"refresh_token": "2f37b70f-18dd-471c-9ef7-8065cb2f4634"}' -H "Content-Type: application/json"
+
+```
+
+Outputs:
+
+```
+
+{"success":"User logged out."}
+
+```
+
+**Retrieving Personal Information**
+
+```
+
+curl -X GET http://localhost:8000/api/me/ -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3Mzc2NzE3MjR9.2PtaZVq5ioGNyQoPDU6U2ED-sgALWJZAq1Kw9-UL8no"
+
+```
+
+Outputs:
+
+```
+
+{"id":1,"username":"","email":"first@example.com"}
+
+```
+
+**Updating Personal Information**
+
+```
+
+curl -X PUT http://localhost:8000/api/me/ -d '{"email": "first@example.com", "username": "John Doe"}' -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3Mzc2NzE3MjR9.2PtaZVq5ioGNyQoPDU6U2ED-sgALWJZAq1Kw9-UL8no" -H "Content-Type: application/json"
+
+```
+
+Outputs:
+
+```
+
+{"id":1,"username":"John Doe","email":"first@example.com"}
 
 ```
